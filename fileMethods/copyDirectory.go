@@ -25,18 +25,16 @@ func CopyDirectory (src, dst string) {
 
 		} else if f.Name() == "build" {
 
-			a := strings.Split(newDst, "/")
-			b := "./app/" + a[len(a) - 2]
+			parentPath := getParentDst(newDst, "./app/")
 
-			_ = os.MkdirAll(b, f.Mode())
-			CopyDirectory(newSrc, b)
+			_ = os.MkdirAll(parentPath, f.Mode())
+			CopyDirectory(newSrc, parentPath)
 
 		} else if !f.IsDir() {
 
-			a := strings.Split(newSrc, "/")
-			b := a[len(a) - 2]
+			parentPath := getParentDst(newDst)
 
-			if b == "build" {
+			if parentPath == "build" {
 				err := CopyFile(newSrc, newDst)
 				if err != nil {
 					log.Fatalln(err)
@@ -44,4 +42,9 @@ func CopyDirectory (src, dst string) {
 			}
 		}
 	}
+}
+func getParentDst (dst ...string) string{
+	a := strings.Split(dst[0], "/")
+	b := dst[1] + a[len(a) -2]
+	return b
 }
